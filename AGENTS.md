@@ -17,9 +17,17 @@ only features that a *driver* does on her own phone.
 - Anything Kyra ops staff does → build in `../kyra-admin/`
 
 ## Branches
-Five teammate branches exist off `main`: `feat/shivansh`, `feat/divyashri`,
-`feat/latisha`, `feat/dev`, `feat/avni`. Stay on whichever is currently
-checked out unless asked otherwise.
+Default to **`feat/shivansh`** (Shivansh's branch) for all feature work.
+Switch to it and merge `main` before building:
+
+```bash
+git checkout main && git pull
+git checkout feat/shivansh && git merge main
+```
+
+The other teammate branches (`feat/divyashri`, `feat/latisha`, `feat/dev`,
+`feat/avni`) are reserved for future engineers; do not commit to them
+unless explicitly asked. Never build features directly on `main`.
 
 ## Workspace context
 For workspace-wide routing rules and strategy docs, see `../AGENTS.md`
