@@ -9,6 +9,7 @@ import { ScreenHeader } from '@/components/screen-header';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Brand } from '@/constants/theme';
+import { addEarnings, DRIVER_TAKE_RATIO } from '@/services/demo-state';
 import { endRide, subscribeLatestRide, type RideDoc } from '@/services/ride-firestore';
 
 export default function InRideScreen() {
@@ -46,6 +47,9 @@ export default function InRideScreen() {
     setEnding(true);
     try {
       await endRide(ride.id);
+      // Bump the driver's running daily total. /online subscribes via
+      // useEarnings() and will animate the counter up on next mount.
+      addEarnings(ride.fareInr * DRIVER_TAKE_RATIO);
       // Effect above will redirect once status flips to 'completed'.
     } catch (e) {
       setEnding(false);

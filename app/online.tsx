@@ -1,7 +1,7 @@
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import * as Haptics from 'expo-haptics';
 import { router } from 'expo-router';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import type { RideRequest } from '@/components/ride-request-modal';
@@ -10,7 +10,7 @@ import { ScreenHeader } from '@/components/screen-header';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Brand } from '@/constants/theme';
-import { markOnboarded } from '@/services/demo-state';
+import { DAILY_TARGET_INR, markOnboarded, useEarnings } from '@/services/demo-state';
 import {
   acceptRide,
   DEMO_DRIVER,
@@ -132,6 +132,8 @@ export default function OnlineScreen() {
         </ThemedText>
         <ThemedText style={styles.sub}>{sub}</ThemedText>
 
+        <EarningsCard />
+
         <View style={styles.tip}>
           <MaterialIcons name="shield" size={16} color={Brand.gold} />
           <ThemedText style={styles.tipText}>
@@ -161,6 +163,62 @@ export default function OnlineScreen() {
   );
 }
 
+// Today's running earnings — animates from previous value to current
+// whenever the store updates (i.e., when a ride completes in /in-ride).
+function EarningsCard() {
+  const earnings = useEarnings();
+  const [displayed, setDisplayed] = useState(earnings);
+  const previousRef = useRef(earnings);
+  const rafRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    const from = previousRef.current;
+    const to = earnings;
+    if (from === to) return;
+    if (rafRef.current != null) cancelAnimationFrame(rafRef.current);
+    const start = performance.now();
+    const duration = 1200;
+    const tick = () => {
+      const elapsed = performance.now() - start;
+      const t = Math.min(1, elapsed / duration);
+      const eased = 1 - Math.pow(1 - t, 3); // easeOutCubic
+      setDisplayed(Math.round(from + (to - from) * eased));
+      if (t < 1) {
+        rafRef.current = requestAnimationFrame(tick);
+      } else {
+        previousRef.current = to;
+        rafRef.current = null;
+      }
+    };
+    rafRef.current = requestAnimationFrame(tick);
+    return () => {
+      if (rafRef.current != null) cancelAnimationFrame(rafRef.current);
+    };
+  }, [earnings]);
+
+  const pct = Math.min(100, Math.round((displayed / DAILY_TARGET_INR) * 100));
+
+  return (
+    <View style={styles.earningsCard}>
+      <View style={styles.earningsTopRow}>
+        <ThemedText style={styles.earningsLabel}>Today</ThemedText>
+        <ThemedText type="defaultSemiBold" style={styles.earningsValue}>
+          ₹{displayed.toLocaleString('en-IN')}
+          <ThemedText style={styles.earningsTarget}>
+            {' / '}₹{DAILY_TARGET_INR}
+          </ThemedText>
+        </ThemedText>
+      </View>
+      <View style={styles.progressTrack}>
+        <View style={[styles.progressFill, { width: `${pct}%` }]} />
+      </View>
+      <ThemedText style={styles.earningsFoot}>
+        Kyra keeps under 25% — the rest is yours.
+      </ThemedText>
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Brand.burgundy },
   body: {
@@ -185,8 +243,53 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     maxWidth: 320,
   },
+  earningsCard: {
+    marginTop: 28,
+    width: '100%',
+    maxWidth: 360,
+    padding: 14,
+    borderRadius: Brand.radius,
+    backgroundColor: Brand.burgundyDark,
+    borderWidth: 1,
+    borderColor: Brand.gold,
+    gap: 10,
+  },
+  earningsTopRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'baseline',
+  },
+  earningsLabel: {
+    color: Brand.beigeMuted,
+    fontSize: 11,
+    letterSpacing: 1.2,
+    textTransform: 'uppercase',
+  },
+  earningsValue: {
+    color: Brand.gold,
+    fontSize: 22,
+  },
+  earningsTarget: {
+    color: Brand.beigeMuted,
+    fontSize: 13,
+  },
+  progressTrack: {
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: Brand.burgundyLight,
+    overflow: 'hidden',
+  },
+  progressFill: {
+    height: '100%',
+    backgroundColor: Brand.gold,
+  },
+  earningsFoot: {
+    color: Brand.beigeMuted,
+    fontSize: 11,
+    textAlign: 'center',
+  },
   tip: {
-    marginTop: 24,
+    marginTop: 16,
     flexDirection: 'row',
     gap: 10,
     padding: 12,
