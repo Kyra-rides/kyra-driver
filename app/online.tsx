@@ -10,6 +10,7 @@ import { ScreenHeader } from '@/components/screen-header';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Brand } from '@/constants/theme';
+import { markOnboarded } from '@/services/demo-state';
 import {
   acceptRide,
   DEMO_DRIVER,
@@ -27,6 +28,12 @@ export default function OnlineScreen() {
   const [shownRideId, setShownRideId] = useState<string | null>(null);
 
   useEffect(() => subscribeLatestRide(setRide), []);
+
+  // Reaching /online means onboarding is done — flag it so the in-memory
+  // demo redirect at app/index.tsx skips /sign-up next time root is hit.
+  useEffect(() => {
+    markOnboarded();
+  }, []);
 
   // Pop the modal exactly once per dispatched ride targeting this driver.
   useEffect(() => {
