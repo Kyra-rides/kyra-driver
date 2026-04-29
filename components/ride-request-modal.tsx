@@ -23,7 +23,7 @@ export type RideRequest = {
   riderRating: number;
 };
 
-const COUNTDOWN_S = 15;
+const COUNTDOWN_S = 60;
 
 export function RideRequestModal({
   visible,
