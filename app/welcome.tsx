@@ -10,34 +10,24 @@ import {
   useWindowDimensions,
 } from 'react-native';
 import { router } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 
 import { BrandButton } from '@/components/brand-button';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Brand } from '@/constants/theme';
 
-const SLIDES = [
-  {
-    eyebrow: 'Drive with Kyra',
-    title: 'Earn safely.\nDrive on your terms.',
-    body: 'Kyra is a women-only mobility platform. Flexible hours, transparent fares, real safety.',
-  },
-  {
-    eyebrow: 'Auto + Bike-taxi',
-    title: 'By her,\nfor her.',
-    body: 'Choose what you drive. Auto-rickshaw or bike-taxi — own or Kyra-leased. We support both.',
-  },
-  {
-    eyebrow: 'Bengaluru first',
-    title: 'Join the women-\nonly road.',
-    body: 'Rider and driver are both verified women. Aadhaar + selfie + OTP — every account, every time.',
-  },
-];
-
 export default function WelcomeScreen() {
+  const { t } = useTranslation();
   const { width } = useWindowDimensions();
   const [page, setPage] = useState(0);
   const scrollRef = useRef<ScrollView>(null);
+
+  const SLIDES = [
+    { eyebrow: t('driver_welcome.slide1_eyebrow'), title: t('driver_welcome.slide1_title'), body: t('driver_welcome.slide1_body') },
+    { eyebrow: t('driver_welcome.slide2_eyebrow'), title: t('driver_welcome.slide2_title'), body: t('driver_welcome.slide2_body') },
+    { eyebrow: t('driver_welcome.slide3_eyebrow'), title: t('driver_welcome.slide3_title'), body: t('driver_welcome.slide3_body') },
+  ];
 
   const onScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
     const next = Math.round(e.nativeEvent.contentOffset.x / width);
@@ -52,7 +42,7 @@ export default function WelcomeScreen() {
           style={styles.logo}
           resizeMode="contain"
         />
-        <ThemedText style={styles.logoTag}>Driver</ThemedText>
+        <ThemedText style={styles.logoTag}>{t('driver_welcome.tag')}</ThemedText>
       </View>
 
       <ScrollView
@@ -86,7 +76,7 @@ export default function WelcomeScreen() {
 
       <View style={styles.footer}>
         <BrandButton
-          title="Start Driving"
+          title={t('driver_welcome.start')}
           style={styles.cta}
           onPress={() => router.push('/language')}
         />
@@ -96,7 +86,7 @@ export default function WelcomeScreen() {
           style={styles.signInLink}
         >
           <ThemedText style={styles.signInText}>
-            Already a Kyra driver? <ThemedText style={styles.signInTextBold}>Sign in</ThemedText>
+            {t('driver_welcome.already')} <ThemedText style={styles.signInTextBold}>{t('driver_welcome.sign_in')}</ThemedText>
           </ThemedText>
         </Pressable>
       </View>

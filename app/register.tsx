@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { router } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 
 import { BrandButton } from '@/components/brand-button';
 import { ScreenHeader } from '@/components/screen-header';
@@ -10,13 +11,14 @@ import { ThemedView } from '@/components/themed-view';
 import { Brand } from '@/constants/theme';
 
 export default function RegisterScreen() {
+  const { t } = useTranslation();
   const [whatsApp, setWhatsApp] = useState(true);
   const [referral, setReferral] = useState('');
   const [showReferral, setShowReferral] = useState(false);
 
   return (
     <ThemedView style={styles.container}>
-      <ScreenHeader title="Register as a driver" />
+      <ScreenHeader title={t('driver_register.title')} />
 
       <View style={styles.body}>
         <View style={styles.avatarWrap}>
@@ -25,12 +27,8 @@ export default function RegisterScreen() {
           </View>
         </View>
 
-        <ThemedText type="title" style={styles.heading}>
-          Welcome to Kyra
-        </ThemedText>
-        <ThemedText style={styles.subtitle}>
-          A few quick details and you&apos;re on your way to driving with us.
-        </ThemedText>
+        <ThemedText type="title" style={styles.heading}>{t('driver_register.title')}</ThemedText>
+        <ThemedText style={styles.subtitle}>{t('driver_register.subtitle')}</ThemedText>
 
         <Pressable
           onPress={() => setWhatsApp(!whatsApp)}
@@ -40,17 +38,17 @@ export default function RegisterScreen() {
             {whatsApp && <MaterialIcons name="check" size={16} color={Brand.burgundy} />}
           </View>
           <ThemedText style={styles.toggleText}>
-            Receive ride alerts and account updates on{' '}
-            <ThemedText style={styles.toggleAccent}>WhatsApp</ThemedText>
+            {t('driver_register.whatsapp_label')}{' '}
+            <ThemedText style={styles.toggleAccent}>{t('driver_register.whatsapp_brand')}</ThemedText>
           </ThemedText>
         </Pressable>
 
         {showReferral ? (
           <View style={styles.referralWrap}>
-            <ThemedText style={styles.referralLabel}>Referral code</ThemedText>
+            <ThemedText style={styles.referralLabel}>{t('driver_register.referral_label')}</ThemedText>
             <TextInput
               style={styles.input}
-              placeholder="Enter code"
+              placeholder={t('driver_register.referral_placeholder')}
               placeholderTextColor={Brand.beigeMuted}
               autoCapitalize="characters"
               value={referral}
@@ -60,7 +58,7 @@ export default function RegisterScreen() {
         ) : (
           <Pressable onPress={() => setShowReferral(true)} hitSlop={8}>
             <ThemedText style={styles.referralLink}>
-              Have a referral code?
+              {t('driver_register.referral_link')}
             </ThemedText>
           </Pressable>
         )}
@@ -68,15 +66,14 @@ export default function RegisterScreen() {
         <View style={styles.note}>
           <MaterialIcons name="verified-user" size={18} color={Brand.gold} />
           <ThemedText style={styles.noteText}>
-            Kyra is women-only on both sides. You&apos;ll verify with Aadhaar + selfie before
-            you can go online.
+            {t('driver_register.verified_note')}
           </ThemedText>
         </View>
       </View>
 
       <View style={styles.footer}>
         <BrandButton
-          title="Register as a Kyra Driver"
+          title={t('driver_register.continue')}
           style={styles.cta}
           onPress={() => router.push('/vehicle')}
         />

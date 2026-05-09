@@ -3,23 +3,60 @@
     "name": "Kyra Driver",
     "slug": "kyra-driver",
     "version": "1.0.0",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "kyradriver",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": false,
+      "bundleIdentifier": "app.kyra.driver",
+      "buildNumber": "1",
+      "config": {
+        "googleMapsApiKey": "AIzaSyC9edB8_0YFshQ5-yXFZMra34CYylor5Ck"
+      },
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSLocationWhenInUseUsageDescription": "Kyra uses your location to match you with nearby riders.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "Kyra needs background location while you are online so riders can see you arriving and so the trip can record its route.",
+        "UIBackgroundModes": [
+          "location",
+          "fetch"
+        ],
+        "NSCameraUsageDescription": "Kyra Driver captures KYC documents (license, RC, selfie) during onboarding.",
+        "NSPhotoLibraryUsageDescription": "Kyra Driver lets you upload existing photos of your KYC documents."
+      }
     },
     "android": {
+      "package": "app.kyra.driver",
+      "versionCode": 1,
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyC9edB8_0YFshQ5-yXFZMra34CYylor5Ck"
+        }
+      },
       "adaptiveIcon": {
-        "backgroundColor": "#2F0E13",
+        "backgroundColor": "#ddbd8b",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_BACKGROUND_LOCATION",
+        "CAMERA",
+        "READ_MEDIA_IMAGES",
+        "FOREGROUND_SERVICE",
+        "FOREGROUND_SERVICE_LOCATION",
+        "POST_NOTIFICATIONS",
+        "VIBRATE"
+      ]
     },
     "web": {
       "output": "static",
@@ -27,22 +64,55 @@
     },
     "plugins": [
       "expo-router",
+      "expo-web-browser",
+      [
+        "expo-notifications",
+        {
+          "color": "#CEB37E",
+          "androidMode": "default",
+          "androidCollapsedTitle": "Kyra Driver"
+        }
+      ],
       [
         "expo-splash-screen",
         {
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#2F0E13",
+          "backgroundColor": "#ddbd8b",
           "dark": {
-            "backgroundColor": "#21080C"
+            "backgroundColor": "#ddbd8b"
           }
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Kyra uses your location to match you with nearby riders.",
+          "locationAlwaysAndWhenInUsePermission": "Kyra needs background location while you are online so riders can see you arriving and so the trip can record its route.",
+          "isIosBackgroundLocationEnabled": true,
+          "isAndroidBackgroundLocationEnabled": true,
+          "isAndroidForegroundServiceEnabled": true
+        }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Kyra Driver captures KYC documents (license, RC, selfie) during onboarding."
         }
       ]
     ],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": false
+    },
+    "owner": "divyashripatil",
+    "extra": {
+      "googleMapsKey": "AIzaSyC9edB8_0YFshQ5-yXFZMra34CYylor5Ck",
+      "router": {},
+      "eas": {
+        "projectId": "96fb6a8e-4907-4321-8411-797715c68940"
+      }
     }
   }
 }

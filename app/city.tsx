@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { router } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 
 import { BrandButton } from '@/components/brand-button';
 import { ScreenHeader } from '@/components/screen-header';
@@ -9,25 +10,27 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Brand } from '@/constants/theme';
 
-const SERVICEABLE = [
-  { id: 'blr', name: 'Bengaluru', tag: 'Pilot zone: HSR Layout' },
-];
-
+// Roadmap city names left as proper nouns (no translation per project conventions).
 const ROADMAP = ['Hyderabad', 'Chennai', 'Pune', 'Mumbai', 'Delhi NCR'];
 
 export default function CityScreen() {
+  const { t } = useTranslation();
   const [selected, setSelected] = useState<string | null>(null);
+
+  const SERVICEABLE = [
+    { id: 'blr', name: t('city.blr_name'), tag: t('city.blr_tag') },
+  ];
 
   return (
     <ThemedView style={styles.container}>
-      <ScreenHeader title="Where will you drive?" />
+      <ScreenHeader title={t('city.header')} />
 
       <ScrollView contentContainerStyle={styles.body}>
         <ThemedText style={styles.subtitle}>
-          Kyra is launching in Bengaluru first. Other cities are on our roadmap.
+          {t('city.subtitle')}
         </ThemedText>
 
-        <ThemedText style={styles.sectionLabel}>Live now</ThemedText>
+        <ThemedText style={styles.sectionLabel}>{t('city.section_live')}</ThemedText>
         {SERVICEABLE.map((c) => {
           const isSelected = selected === c.id;
           return (
@@ -51,14 +54,14 @@ export default function CityScreen() {
               </View>
               <View style={styles.liveBadge}>
                 <View style={styles.liveDot} />
-                <ThemedText style={styles.liveText}>Live</ThemedText>
+                <ThemedText style={styles.liveText}>{t('city.live_badge')}</ThemedText>
               </View>
             </Pressable>
           );
         })}
 
         <ThemedText style={[styles.sectionLabel, styles.sectionLabelMt]}>
-          Coming soon
+          {t('city.section_soon')}
         </ThemedText>
         {ROADMAP.map((c) => (
           <View key={c} style={[styles.card, styles.cardDisabled]}>
@@ -66,14 +69,14 @@ export default function CityScreen() {
               <View style={[styles.radio, styles.radioDisabled]} />
               <ThemedText style={styles.cardTitleDisabled}>{c}</ThemedText>
             </View>
-            <ThemedText style={styles.soonText}>Soon</ThemedText>
+            <ThemedText style={styles.soonText}>{t('city.soon_badge')}</ThemedText>
           </View>
         ))}
       </ScrollView>
 
       <View style={styles.footer}>
         <BrandButton
-          title="Confirm city"
+          title={t('city.confirm')}
           disabled={!selected}
           style={styles.cta}
           onPress={() => router.push('/driving-license')}

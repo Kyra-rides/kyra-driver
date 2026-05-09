@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { router } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 
 import { BrandButton } from '@/components/brand-button';
 import { ScreenHeader } from '@/components/screen-header';
@@ -10,32 +11,32 @@ import { ThemedView } from '@/components/themed-view';
 import { Brand } from '@/constants/theme';
 
 export default function DrivingLicenseScreen() {
+  const { t } = useTranslation();
   const [front, setFront] = useState(false);
   const [back, setBack] = useState(false);
   const ready = front && back;
 
   return (
     <ThemedView style={styles.container}>
-      <ScreenHeader title="Driving License" />
+      <ScreenHeader title={t('driving_license.header')} />
 
       <ScrollView contentContainerStyle={styles.body}>
         <ThemedText type="title" style={styles.heading}>
-          Upload your DL
+          {t('driving_license.title')}
         </ThemedText>
         <ThemedText style={styles.subtitle}>
-          Auto and bike-taxi both need a valid commercial DL (with PSV badge for bike-taxi).
-          We&apos;ll OCR the details and you can correct anything that&apos;s off.
+          {t('driving_license.subtitle')}
         </ThemedText>
 
         <UploadCard
-          label="Front side"
-          hint="Make sure your name and DL number are readable."
+          label={t('driving_license.front')}
+          hint={t('driving_license.front_hint')}
           done={front}
           onPress={() => setFront(true)}
         />
         <UploadCard
-          label="Back side"
-          hint="Upload even if it looks blank — RTO endorsements live there."
+          label={t('driving_license.back')}
+          hint={t('driving_license.back_hint')}
           done={back}
           onPress={() => setBack(true)}
         />
@@ -43,17 +44,17 @@ export default function DrivingLicenseScreen() {
         <View style={styles.tips}>
           <View style={styles.tipsHead}>
             <MaterialIcons name="lightbulb-outline" size={16} color={Brand.gold} />
-            <ThemedText style={styles.tipsHeadText}>Photo tips</ThemedText>
+            <ThemedText style={styles.tipsHeadText}>{t('driving_license.tips_head')}</ThemedText>
           </View>
-          <Tip text="Hold your phone flat above the DL — no angle." />
-          <Tip text="Use natural light, no flash glare." />
-          <Tip text="Crop tight to the card edges." />
+          <Tip text={t('driving_license.tip1')} />
+          <Tip text={t('driving_license.tip2')} />
+          <Tip text={t('driving_license.tip3')} />
         </View>
       </ScrollView>
 
       <View style={styles.footer}>
         <BrandButton
-          title="Submit"
+          title={t('driving_license.submit')}
           disabled={!ready}
           style={styles.cta}
           onPress={() => router.push('/document-centre')}
@@ -74,6 +75,7 @@ function UploadCard({
   done: boolean;
   onPress: () => void;
 }) {
+  const { t } = useTranslation();
   return (
     <Pressable onPress={onPress} style={[styles.upload, done && styles.uploadDone]}>
       <View style={styles.uploadIcon}>
@@ -88,7 +90,7 @@ function UploadCard({
           {label}
         </ThemedText>
         <ThemedText style={styles.uploadHint}>
-          {done ? 'Uploaded' : hint}
+          {done ? t('driving_license.uploaded') : hint}
         </ThemedText>
       </View>
       <MaterialIcons

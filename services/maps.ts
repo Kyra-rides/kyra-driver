@@ -1,8 +1,6 @@
-import type { LatLng } from '@/constants/mock-ride';
+export type LatLng = { lat: number; lng: number };
 
-// TODO: move to EXPO_PUBLIC_GOOGLE_MAPS_KEY once we restart Metro on Node 22.
-// Mirrors kyra-rider/.env so all three apps share the same project key.
-export const GOOGLE_MAPS_KEY = 'AIzaSyDZCAFL8oIrhWhAxin1s01xwqJRUVil90o';
+const GOOGLE_MAPS_KEY = process.env.EXPO_PUBLIC_GOOGLE_MAPS_KEY ?? '';
 
 const STATIC_MAPS_BASE = 'https://maps.googleapis.com/maps/api/staticmap';
 const ROUTES_BASE = 'https://routes.googleapis.com/directions/v2:computeRoutes';

@@ -1,114 +1,111 @@
+/**
+ * First-launch language picker for the driver app.
+ *
+ * Mirror of kyra-rider/app/language.tsx. Shown to every new user before
+ * /sign-up. Persists the chosen language locally + syncs to
+ * kyra.profiles.language_pref once signed in.
+ */
+
 import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { router } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 
 import { BrandButton } from '@/components/brand-button';
 import { ScreenHeader } from '@/components/screen-header';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Brand } from '@/constants/theme';
+import { setLanguage, type LangCode } from '@/services/i18n';
 
-const LANGUAGES = [
-  { code: 'en', label: 'English', native: 'English' },
-  { code: 'kn', label: 'Kannada', native: 'ಕನ್ನಡ' },
-  { code: 'hi', label: 'Hindi', native: 'हिन्दी' },
-  { code: 'ta', label: 'Tamil', native: 'தமிழ்' },
-  { code: 'te', label: 'Telugu', native: 'తెలుగు' },
+const OPTIONS: { code: LangCode; label: string; tag: string }[] = [
+  { code: 'en', label: 'English', tag: 'A' },
+  { code: 'hi', label: 'हिंदी',   tag: 'अ' },
+  { code: 'kn', label: 'ಕನ್ನಡ',   tag: 'ಅ' },
 ];
 
 export default function LanguageScreen() {
-  const [selected, setSelected] = useState<string | null>(null);
+  const { t } = useTranslation();
+  const [picked, setPicked] = useState<LangCode>('en');
+  const [busy, setBusy]     = useState(false);
+
+  const onContinue = async () => {
+    setBusy(true);
+    await setLanguage(picked);
+    router.replace('/sign-up');
+  };
 
   return (
     <ThemedView style={styles.container}>
-      <ScreenHeader title="Choose your language" />
+      <ScreenHeader title={t('language.title')} />
+      <ScrollView contentContainerStyle={styles.body}>
+        <ThemedText style={styles.subtitle}>{t('language.subtitle')}</ThemedText>
 
-      <ScrollView contentContainerStyle={styles.list}>
-        <ThemedText style={styles.subtitle}>
-          You can change this later in your profile.
-        </ThemedText>
-
-        {LANGUAGES.map((lang) => {
-          const isSelected = selected === lang.code;
-          return (
-            <Pressable
-              key={lang.code}
-              onPress={() => setSelected(lang.code)}
-              style={[styles.row, isSelected && styles.rowSelected]}
-            >
-              <View style={styles.rowText}>
-                <ThemedText type="defaultSemiBold" style={styles.native}>
-                  {lang.native}
+        <View style={styles.options}>
+          {OPTIONS.map((o) => {
+            const active = picked === o.code;
+            return (
+              <Pressable
+                key={o.code}
+                onPress={() => setPicked(o.code)}
+                style={[styles.option, active && styles.optionActive]}
+              >
+                <View style={[styles.optionTag, active && styles.optionTagActive]}>
+                  <ThemedText style={[styles.optionTagText, active && styles.optionTagTextActive]}>
+                    {o.tag}
+                  </ThemedText>
+                </View>
+                <ThemedText type="defaultSemiBold" style={styles.optionLabel}>
+                  {o.label}
                 </ThemedText>
-                <ThemedText style={styles.label}>{lang.label}</ThemedText>
-              </View>
-              <View style={[styles.radio, isSelected && styles.radioSelected]}>
-                {isSelected && (
-                  <MaterialIcons name="check" size={16} color={Brand.burgundy} />
+                {active ? (
+                  <MaterialIcons name="check-circle" size={22} color={Brand.gold} />
+                ) : (
+                  <View style={styles.optionRadio} />
                 )}
-              </View>
-            </Pressable>
-          );
-        })}
-      </ScrollView>
+              </Pressable>
+            );
+          })}
+        </View>
 
-      <View style={styles.footer}>
         <BrandButton
-          title="Confirm"
-          disabled={!selected}
+          title={t('language.continue')}
+          onPress={onContinue}
+          disabled={busy}
           style={styles.cta}
-          onPress={() => router.push('/sign-up')}
         />
-      </View>
+      </ScrollView>
     </ThemedView>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Brand.burgundy },
-  list: { paddingHorizontal: 24, paddingTop: 16, paddingBottom: 24, gap: 12 },
-  subtitle: {
-    color: Brand.beigeMuted,
-    fontSize: 14,
-    marginBottom: 8,
-  },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: 16,
-    borderWidth: 1,
-    borderColor: Brand.burgundyLight,
+  body:      { padding: 24, gap: 16, flexGrow: 1 },
+  subtitle:  { color: Brand.beigeMuted, fontSize: 14, lineHeight: 20 },
+  options:   { gap: 10, marginTop: 16, marginBottom: 8 },
+  option: {
+    flexDirection: 'row', alignItems: 'center', gap: 14,
+    padding: 14,
     borderRadius: Brand.radius,
     backgroundColor: Brand.burgundyLight,
+    borderWidth: 2, borderColor: Brand.border,
   },
-  rowSelected: {
-    borderColor: Brand.beige,
+  optionActive: { borderColor: Brand.gold },
+  optionTag: {
+    width: 40, height: 40, borderRadius: 20,
     backgroundColor: Brand.burgundyDark,
+    alignItems: 'center', justifyContent: 'center',
+    borderWidth: 1, borderColor: Brand.border,
   },
-  rowText: { gap: 2 },
-  native: { fontSize: 18, color: Brand.beige },
-  label: { fontSize: 13, color: Brand.beigeMuted },
-  radio: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    borderWidth: 1.5,
-    borderColor: Brand.beigeMuted,
-    alignItems: 'center',
-    justifyContent: 'center',
+  optionTagActive:     { backgroundColor: Brand.gold, borderColor: Brand.gold },
+  optionTagText:       { color: Brand.beige, fontSize: 18, fontWeight: '700' },
+  optionTagTextActive: { color: Brand.burgundyDark },
+  optionLabel:         { flex: 1, fontSize: 18, color: Brand.beige },
+  optionRadio: {
+    width: 22, height: 22, borderRadius: 11,
+    borderWidth: 1.5, borderColor: Brand.beigeMuted,
   },
-  radioSelected: {
-    backgroundColor: Brand.beige,
-    borderColor: Brand.beige,
-  },
-  footer: {
-    paddingHorizontal: 24,
-    paddingBottom: 32,
-    paddingTop: 12,
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: Brand.burgundyLight,
-  },
-  cta: { width: '100%' },
+  cta: { marginTop: 'auto', alignSelf: 'stretch' },
 });
